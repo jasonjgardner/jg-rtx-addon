@@ -103,7 +103,7 @@ async function writeTerrainTexture(textureData = {}) {
       copyFile(join(DIR_SRC, '/materials/', file), join(textureDest, `${color}.png`)),
       writeFile(
         join(DIR_DIST, `/BP/blocks/${color}.json`),
-        JSON.stringify(getBlockData(color, base), null, 2)
+        JSON.stringify(await getBlockData(color, base), null, 2)
       )
     );
 
