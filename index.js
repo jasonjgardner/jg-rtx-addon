@@ -23,7 +23,7 @@ async function writeTerrainTexture(textureData = {}) {
   try {
     terrainData = JSON.parse(
       (
-        await readFile(join(DIR_SRC, "/RP/textures/terrain_texture.json"))
+        await readFile(join(DIR_SRC, "/static/RP/textures/terrain_texture.json"))
       ).toString()
     );
   } catch (err) {
@@ -100,7 +100,7 @@ async function writeTerrainTexture(textureData = {}) {
         join(textureDest, `${color}.texture_set.json`),
         JSON.stringify(textureSet, null, 2)
       ),
-      copyFile(join(DIR_SRC, file), join(textureDest, `${color}.png`)),
+      copyFile(join(DIR_SRC, '/materials/', file), join(textureDest, `${color}.png`)),
       writeFile(
         join(DIR_DIST, `/BP/blocks/${color}.json`),
         JSON.stringify(getBlockData(color, base), null, 2)
@@ -110,7 +110,7 @@ async function writeTerrainTexture(textureData = {}) {
     if (files.includes(`${base}_mer.png`)) {
       tasks.push(
         copyFile(
-          join(DIR_SRC, `${base}_mer.png`),
+          join(DIR_SRC, `/materials/${base}_mer.png`),
           join(textureDest, `${color}_mer.png`)
         )
       );
@@ -119,7 +119,7 @@ async function writeTerrainTexture(textureData = {}) {
     if (files.includes(`${base}_normal.png`)) {
       tasks.push(
         copyFile(
-          join(DIR_SRC, `${base}_normal.png`),
+          join(DIR_SRC, `/materials/${base}_normal.png`),
           join(textureDest, `${color}_normal.png`)
         )
       );
@@ -128,7 +128,7 @@ async function writeTerrainTexture(textureData = {}) {
     await Promise.all(tasks);
   };
 
-  (await readdir(DIR_SRC)).map(
+  (await readdir(join(DIR_SRC, '/materials'))).map(
     async (file, idx, files) => await processDir(file, files)
   );
 
