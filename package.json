@@ -1,0 +1,27 @@
+{
+  "name": "jg-rtx-addon",
+  "version": "1.0.0",
+  "description": "JG RTX behavior pack",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "prettier": "prettier --write .",
+    "init-dirs": "mkdir dist\\BP\\blocks && mkdir dist\\RP\\texts && mkdir dist\\RP\\textures\\blocks"
+  },
+  "keywords": [
+    "minecraft",
+    "rtx",
+    "rp",
+    "bp",
+    "resource-pack"
+  ],
+  "author": "Jason Gardner",
+  "license": "CC-BY-SA-4.0",
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  },
+  "dependencies": {
+    "color-thief-node": "^1.0.4",
+    "fs-extra": "^10.0.0"
+  }
+}
