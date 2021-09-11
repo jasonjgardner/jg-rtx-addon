@@ -1,0 +1,41 @@
+name: Create .mcaddon from repository contents
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Assemble add-on
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout resource pack contents
+        uses: actions/checkout@v2
+      - name: Initialize dist directories
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          mkdir dist/BP/blocks
+          mkdir dist/RP/texts
+          mkdir dist/RP/textures/blocks
+      - name: Run build tasks
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          node .github/actions/build/index.js
+      - name: Build mcpack archive
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install zip
+          cd ${GITHUB_WORKSPACE}
+          zip -r -0 JG-RTX.mcaddon ./dist
+      - name: Upload mcpack
+        uses: actions/upload-artifact@v2
+        with:
+          name: JG-RTX Add-on
+          path: JG-RTX.mcaddon
+        
+      
