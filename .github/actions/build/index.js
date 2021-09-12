@@ -1,8 +1,15 @@
 const { join, basename } = require("path");
-const { readdir, writeFile, copyFile, readFile } = require("fs/promises");
+const {
+  readJson,
+  writeJson,
+  writeFile,
+  readdir,
+  copyFile,
+} = require("fs-extra");
 const { DIR_DIST, DIR_SRC, PACK_NS } = require("./lib/util.js");
 const { getBlockList, getBlockData } = require("./lib/blocks.js");
 const guessSound = require("./lib/sounds.js");
+const generateManifest = require("./lib/manifest.js");
 
 const getTextureSet = (base) => {
   const color = base.toLowerCase().replace(/\s+/g, "_");
@@ -21,10 +28,8 @@ async function writeTerrainTexture(textureData = {}) {
   let terrainData = {};
 
   try {
-    terrainData = JSON.parse(
-      (
-        await readFile(join(DIR_SRC, "/static/RP/textures/terrain_texture.json"))
-      ).toString()
+    terrainData = await readJson(
+      join(DIR_SRC, "/static/RP/textures/terrain_texture.json")
     );
   } catch (err) {
     console.warn("Unable to open terrain_texture.json: %s", err);
@@ -39,9 +44,9 @@ async function writeTerrainTexture(textureData = {}) {
     ...textureData,
   };
 
-  await writeFile(
+  return writeJson(
     join(DIR_DIST, "/RP/textures/terrain_texture.json"),
-    JSON.stringify(terrainData, null, 2)
+    terrainData
   );
 }
 
@@ -96,16 +101,23 @@ async function writeTerrainTexture(textureData = {}) {
     textureData[textureId] = { textures: `textures/blocks/${color}` };
 
     tasks.push(
-      writeFile(
-        join(textureDest, `${color}.texture_set.json`),
-        JSON.stringify(textureSet, null, 2)
-      ),
-      copyFile(join(DIR_SRC, '/materials/', file), join(textureDest, `${color}.png`)),
-      writeFile(
-        join(DIR_DIST, `/BP/blocks/${color}.json`),
-        JSON.stringify(await getBlockData(color, base), null, 2)
+      writeJson(join(textureDest, `${color}.texture_set.json`), textureSet),
+      copyFile(
+        join(DIR_SRC, "/materials/", file),
+        join(textureDest, `${color}.png`)
       )
     );
+
+    try {
+      tasks.push(
+        writeJson(
+          join(DIR_DIST, `/BP/blocks/${color}.json`),
+          await getBlockData(color, base)
+        )
+      );
+    } catch (err) {
+      console.error("Could not write block behavior data: %s", err);
+    }
 
     if (files.includes(`${base}_mer.png`)) {
       tasks.push(
@@ -125,22 +137,20 @@ async function writeTerrainTexture(textureData = {}) {
       );
     }
 
-    await Promise.all(tasks);
+    return Promise.all(tasks);
   };
 
-  (await readdir(join(DIR_SRC, '/materials'))).map(
+  [...(await readdir(join(DIR_SRC, "/materials")))].map(
     async (file, idx, files) => await processDir(file, files)
   );
 
-  await writeFile(
-    join(DIR_DIST, "/RP/blocks.json"),
-    JSON.stringify(blocks, null, 2)
-  );
-
-  await writeFile(
-    join(DIR_DIST, "/RP/texts/en_US.lang"),
-    [...tileNames].join("\n")
-  );
-
-  await writeTerrainTexture(textureData);
+  await Promise.all([
+    writeJson(join(DIR_DIST, "/RP/blocks.json"), blocks),
+    writeFile(
+      join(DIR_DIST, "/RP/texts/en_US.lang"),
+      [...tileNames].join("\n")
+    ),
+    writeTerrainTexture(textureData),
+    generateManifest(),
+  ]);
 })();

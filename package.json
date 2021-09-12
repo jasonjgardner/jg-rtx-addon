@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "JG RTX behavior pack",
   "private": true,
-  "main": "index.js",
+  "main": ".github/actions/build/index.js",
   "scripts": {
-    "prettier": "prettier --write .",
-    "init-dirs": "mkdir dist\\BP\\blocks && mkdir dist\\RP\\texts && mkdir dist\\RP\\textures\\blocks"
+    "build": "node .github/actions/build",
+    "prettier": "prettier --write ."
   },
   "keywords": [
     "minecraft",
@@ -23,5 +23,16 @@
   "dependencies": {
     "color-thief-node": "^1.0.4",
     "fs-extra": "^10.0.0"
+  },
+  "config": {
+    "RP_UUID": [
+      "f85c8b13-316e-446e-bafa-025d65265f77",
+      "7f2f52ac-fab7-496f-a5c9-f4d3d4f25890"
+    ],
+    "BP_UUID": [
+      "127ace4b-4a4c-489f-8f95-22cf8cc39e35",
+      "a7a9ce7c-21f5-4de8-b22e-e5a61dcf91b7"
+    ],
+    "TARGET_VERSION": "1.17.11"
   }
 }

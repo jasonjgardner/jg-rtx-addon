@@ -1,6 +1,5 @@
 const { join } = require("path");
-const { readFile } = require("fs/promises");
-const { readJson, pathExists, writeJson, readJSON } = require('fs-extra')
+const { readFile, readJson, pathExists } = require("fs-extra");
 //const { getColorFromURL } = require('color-thief-node')
 const { DIR_SRC, PACK_NS } = require("./util.js");
 
@@ -41,12 +40,12 @@ const getDefaultBlock = async (color, base) => {
 };
 
 const getBlockData = async (color, base) => {
-  const blockFile = join(DIR_SRC, `/static/BP/blocks/${color}.json`)
+  const blockFile = join(DIR_SRC, `/static/BP/blocks/${color}.json`);
 
   return {
     ...(await getDefaultBlock(color, base)),
-    ...(await pathExists(blockFile)) ? await readJson(blockFile) : {}
-  }
+    ...((await pathExists(blockFile)) ? await readJson(blockFile) : {}),
+  };
 };
 
 const getBlockList = async () =>
