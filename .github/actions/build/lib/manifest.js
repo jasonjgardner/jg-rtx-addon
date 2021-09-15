@@ -35,7 +35,7 @@ const generateManifest = async (
   targetVersion = "1.17.10"
 ) => {
   const rpSrc = await loadManifest()
-  const version = rpSrc.header?.version || arrayFromVersion(packVersion)
+  const version = rpSrc.header.version || arrayFromVersion(packVersion)
 
   const rpManifest = {
     format_version: 2,
@@ -46,7 +46,7 @@ const generateManifest = async (
     modules: [
       {
         version,
-        description: rpSrc.header?.description || 'Resources',
+        description: rpSrc.header.description || 'Resources',
         type: "resources",
       },
     ],
@@ -63,13 +63,13 @@ const generateManifest = async (
     modules: [
       {
         version,
-        description: bpSrc.header?.description || 'Data',
+        description: bpSrc.header.description || 'Data',
         type: "data",
       },
     ],
     dependencies: [
       {
-        uuid: rpManifest.header.uuid,
+        uuid: rpSrc.header.uuid,
         version,
       },
     ],
