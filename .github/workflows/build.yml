@@ -22,10 +22,8 @@ jobs:
           mkdir dist/BP/blocks
           mkdir dist/RP/texts
           mkdir dist/RP/textures/blocks
-      - name: Run build tasks
-        run: |
-          cd ${GITHUB_WORKSPACE}
-          node .github/actions/build/index.js
+      - name: Run build script
+        uses: ./.github/actions/build/index.js
       - name: Build mcpack archive
         run: |
           sudo apt-get update

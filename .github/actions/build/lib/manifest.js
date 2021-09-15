@@ -1,64 +1,83 @@
 const { join } = require("path");
 const { readJson, writeJson } = require("fs-extra");
-const { DIR_DIST } = require("./util.js");
+const deepExtend = require('deep-extend')
+const { DIR_DIST, DIR_SRC } = require("./util.js");
 
-const generateManifest = async () => {
-  const {
-    version: v,
-    name,
-    description,
-    config: { BP_UUID, RP_UUID, TARGET_VERSION },
-  } = await readJson(join(process.cwd(), "/package.json"));
+const loadManifest = async (rp = true) => {
+  const srcFile = join(DIR_SRC, 'static/', (rp ? '/RP' : '/BP'), '/manifest.json')
 
-  const version = v.split(".", 3).map(n => parseInt(n, 10));
+  try {
+    return await readJson(srcFile)
+  } catch (err) {
+    console.warn('Failed loading manifest file from "%s": ', srcFile, err)
+  }
+
+  return {}
+}
+
+const arrayFromVersion = ver => {
+  if (Array.isArray(ver)) {
+    ver.length = 3;
+    return ver
+  }
+  
+  return ver.toString().split(".", 3).map((n) => parseInt(n, 10));
+}
+
+/**
+ * Generate manifests for BP and RP
+ * @param {string} packVersion Pack version number
+ * @param {string|Number[]} targetVersion Minecraft version number
+ * @returns
+ */
+const generateManifest = async (
+  packVersion = "1.0.0",
+  targetVersion = "1.17.10"
+) => {
+  const rpSrc = await loadManifest()
+  const version = rpSrc.header?.version || arrayFromVersion(packVersion)
 
   const rpManifest = {
     format_version: 2,
     header: {
-      name,
-      description,
       version,
-      min_engine_version:
-        typeof TARGET_VERSION === "string"
-          ? TARGET_VERSION.split(".", 3).map(n => parseInt(n, 10))
-          : Array.from(TARGET_VERSION || [1, 17, 10]),
-      uuid: RP_UUID[0],
+      min_engine_version: arrayFromVersion(targetVersion),
     },
     modules: [
       {
         version,
-        description: `${name} resources`,
+        description: rpSrc.header?.description || 'Resources',
         type: "resources",
-        uuid: RP_UUID[1],
       },
     ],
+    capabilities: [
+      'raytraced'
+    ]
   };
 
-  return Promise.all([
-    writeJson(join(DIR_DIST, "/RP/manifest.json"), rpManifest),
-    writeJson(join(DIR_DIST, "/BP/manifest.json"), {
-      format_version: 2,
-      header: {
-        ...rpManifest.header,
-        ...{
-          uuid: BP_UUID[0],
-        },
+  const bpSrc = await loadManifest(true)
+
+  const bpManifest = {
+    format_version: 2,
+    header: bpSrc.header || rpManifest.header,
+    modules: [
+      {
+        version,
+        description: bpSrc.header?.description || 'Data',
+        type: "data",
       },
-      modules: [
-        {
-          version,
-          description: `${name} data`,
-          type: "data",
-          uuid: BP_UUID[1],
-        },
-      ],
-      dependencies: [
-        {
-          uuid: RP_UUID[0],
-          version,
-        },
-      ],
-    }),
+    ],
+    dependencies: [
+      {
+        uuid: rpManifest.header.uuid,
+        version,
+      },
+    ],
+  }
+
+  return Promise.all([
+    writeJson(join(DIR_DIST, "/RP/manifest.json"), deepExtend(rpManifest, rpSrc)),
+    writeJson(join(DIR_DIST, "/BP/manifest.json"), deepExtend(bpManifest, bpSrc)),
   ]);
 };
 

@@ -1,0 +1,65 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "detail": "Run build script",
+      "type": "npm",
+      "script": "build"
+    },
+    {
+      "label": "Push RP",
+      "detail": "Push to development resource packs",
+      "type": "shell",
+      "windows": {
+        "command": "xcopy",
+        "args": [
+          "/E",
+          "/I",
+          "/F",
+          "${workspaceFolder}\\dist\\RP",
+          "${env:LocalAppData}\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\development_resource_packs\\${workspaceFolderBasename} RP"
+        ]
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Push BP",
+      "detail": "Push to development behavior packs",
+      "type": "shell",
+      "windows": {
+        "command": "xcopy",
+        "args": [
+          "/E",
+          "/I",
+          "${workspaceFolder}\\dist\\BP",
+          "${env:LocalAppData}\\Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang\\development_behavior_packs\\${workspaceFolderBasename} BP"
+        ]
+      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Test",
+      "detail": "Build and deploy to development Minecraft directories",
+      "dependsOn": [
+        "Build",
+        "Push RP",
+        "Push BP"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
