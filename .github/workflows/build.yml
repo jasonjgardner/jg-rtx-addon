@@ -16,12 +16,6 @@ jobs:
     steps:
       - name: Checkout resource pack contents
         uses: actions/checkout@v2
-      - name: Initialize dist directories
-        run: |
-          cd ${GITHUB_WORKSPACE}
-          mkdir dist/BP/blocks
-          mkdir dist/RP/texts
-          mkdir dist/RP/textures/blocks
       - name: Run build script
         uses: ./.github/actions/build/index.js
       - name: Build mcpack archive

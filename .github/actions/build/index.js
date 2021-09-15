@@ -1,10 +1,11 @@
 const { join, basename } = require("path");
 const {
   readJson,
-  writeJson,
-  writeFile,
+  outputJSON,
+  outputFile,
   readdir,
   copyFile,
+  ensureDir
 } = require("fs-extra");
 const { DIR_DIST, DIR_SRC, PACK_NS } = require("./lib/util.js");
 const { getBlockList, getBlockData } = require("./lib/blocks.js");
@@ -44,7 +45,7 @@ async function writeTerrainTexture(textureData = {}) {
     ...textureData,
   };
 
-  return writeJson(
+  return outputJSON(
     join(DIR_DIST, "/RP/textures/terrain_texture.json"),
     terrainData
   );
@@ -101,7 +102,7 @@ async function writeTerrainTexture(textureData = {}) {
     textureData[textureId] = { textures: `textures/blocks/${color}` };
 
     tasks.push(
-      writeJson(join(textureDest, `${color}.texture_set.json`), textureSet),
+      outputJSON(join(textureDest, `${color}.texture_set.json`), textureSet),
       copyFile(
         join(DIR_SRC, "/materials/", file),
         join(textureDest, `${color}.png`)
@@ -110,7 +111,7 @@ async function writeTerrainTexture(textureData = {}) {
 
     try {
       tasks.push(
-        writeJson(
+        outputJSON(
           join(DIR_DIST, `/BP/blocks/${color}.json`),
           await getBlockData(color, base)
         )
@@ -140,17 +141,25 @@ async function writeTerrainTexture(textureData = {}) {
     return Promise.all(tasks);
   };
 
+  await Promise.all([
+    ensureDir(join(DIR_DIST, '/BP/blocks')),
+    ensureDir(join(DIR_DIST, '/RP/texts')),
+    ensureDir(join(DIR_DIST, '/RP/textures/blocks'))
+  ]);
+
   [...(await readdir(join(DIR_SRC, "/materials")))].map(
     async (file, idx, files) => await processDir(file, files)
   );
 
   await Promise.all([
-    writeJson(join(DIR_DIST, "/RP/blocks.json"), blocks),
-    writeFile(
+    outputJSON(join(DIR_DIST, "/RP/blocks.json"), blocks),
+    outputFile(
       join(DIR_DIST, "/RP/texts/en_US.lang"),
       [...tileNames].join("\n")
     ),
     writeTerrainTexture(textureData),
     generateManifest(),
+    copyFile(join(DIR_SRC, '/static/RP/pack_icon.png'), join(DIR_DIST, '/RP/pack_icon.png')),
+    copyFile(join(DIR_SRC, '/static/BP/pack_icon.png'), join(DIR_DIST, '/BP/pack_icon.png'))
   ]);
 })();
