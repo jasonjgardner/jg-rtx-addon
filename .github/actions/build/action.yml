@@ -2,5 +2,5 @@ name: Build pack
 description: Run mcaddon build process
 
 runs:
-  using: 'node14'
+  using: 'node12'
   main: 'index.js'
