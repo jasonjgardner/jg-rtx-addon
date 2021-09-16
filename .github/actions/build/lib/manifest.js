@@ -61,7 +61,7 @@ const generateManifest = async (
     capabilities: ["raytraced"],
   };
 
-  const bpSrc = await loadManifest(true);
+  const bpSrc = await loadManifest(false);
 
   const bpManifest = {
     format_version: 2,
