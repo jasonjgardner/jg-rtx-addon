@@ -142,7 +142,11 @@ async function writeTerrainTexture(textureData = {}) {
     return tasks;
   };
 
-  await ensureDir(join(DIR_DIST, "/RP/textures/blocks"));
+  await Promise.all([
+    ensureDir(join(DIR_DIST, "/BP/blocks")),
+    ensureDir(join(DIR_DIST, "/RP/texts")),
+    ensureDir(join(DIR_DIST, "/RP/textures/blocks")),
+  ]);
 
   const buildTasks = [
     outputJSON(join(DIR_DIST, "/RP/blocks.json"), blocks),
