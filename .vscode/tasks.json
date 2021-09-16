@@ -49,11 +49,7 @@
     {
       "label": "Test",
       "detail": "Build and deploy to development Minecraft directories",
-      "dependsOn": [
-        "Build",
-        "Push RP",
-        "Push BP"
-      ],
+      "dependsOn": ["Build", "Push RP", "Push BP"],
       "dependsOrder": "sequence",
       "problemMatcher": [],
       "group": {

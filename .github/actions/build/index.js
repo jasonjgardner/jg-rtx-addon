@@ -5,7 +5,8 @@ const {
   outputFile,
   readdir,
   copyFile,
-  ensureDir
+  ensureDir,
+  pathExists,
 } = require("fs-extra");
 const { DIR_DIST, DIR_SRC, PACK_NS } = require("./lib/util.js");
 const { getBlockList, getBlockData } = require("./lib/blocks.js");
@@ -138,20 +139,12 @@ async function writeTerrainTexture(textureData = {}) {
       );
     }
 
-    return Promise.all(tasks);
+    return tasks;
   };
 
-  await Promise.all([
-    ensureDir(join(DIR_DIST, '/BP/blocks')),
-    ensureDir(join(DIR_DIST, '/RP/texts')),
-    ensureDir(join(DIR_DIST, '/RP/textures/blocks'))
-  ]);
+  await ensureDir(join(DIR_DIST, "/RP/textures/blocks"));
 
-  [...(await readdir(join(DIR_SRC, "/materials")))].map(
-    async (file, idx, files) => await processDir(file, files)
-  );
-
-  await Promise.all([
+  const buildTasks = [
     outputJSON(join(DIR_DIST, "/RP/blocks.json"), blocks),
     outputFile(
       join(DIR_DIST, "/RP/texts/en_US.lang"),
@@ -159,7 +152,25 @@ async function writeTerrainTexture(textureData = {}) {
     ),
     writeTerrainTexture(textureData),
     generateManifest(),
-    copyFile(join(DIR_SRC, '/static/RP/pack_icon.png'), join(DIR_DIST, '/RP/pack_icon.png')),
-    copyFile(join(DIR_SRC, '/static/BP/pack_icon.png'), join(DIR_DIST, '/BP/pack_icon.png'))
-  ]);
+    copyFile(
+      join(DIR_SRC, "/static/RP/pack_icon.png"),
+      join(DIR_DIST, "/RP/pack_icon.png")
+    ),
+    copyFile(
+      join(DIR_SRC, "/static/BP/pack_icon.png"),
+      join(DIR_DIST, "/BP/pack_icon.png")
+    ),
+  ];
+
+  const materialsDir = join(DIR_SRC, "/materials");
+
+  if (await pathExists(materialsDir)) {
+    buildTasks.push(
+      ...[...(await readdir(materialsDir))].map((file, idx, files) =>
+        processDir(file, files)
+      )
+    );
+  }
+
+  await Promise.all(buildTasks);
 })();
