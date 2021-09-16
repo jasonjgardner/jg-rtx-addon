@@ -3,13 +3,13 @@
     "header": {
         "name": "JG RTX Add-on",
         "description": "Adds blocks and biomes to JG RTX",
-        "uuid": "ccfbac44-69d7-4592-b88b-d2ff458ed418",
+        "uuid": "9ee252dc-8315-4f83-9330-f8df0e8d3945",
         "version": [1, 0, 0],
         "min_engine_version": [1, 17, 11]
     },
     "modules": [{
         "type": "data",
-        "uuid": "9d293990-78ed-445a-9ea0-98ed55dd701b",
+        "uuid": "74c9b92a-b72d-4a1a-b48d-d1e85de26833",
         "version": [1, 0, 0]
     }]
 }
