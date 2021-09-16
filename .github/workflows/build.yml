@@ -38,11 +38,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install zip
-          cd ${GITHUB_WORKSPACE}
-          zip -r -0 JG-RTX.mcaddon ./dist/RP ./dist/BP
+          cd ${GITHUB_WORKSPACE}/dist
+          zip -r -0 JG-RTX.mcaddon ./RP ./BP
 
       - name: Upload mcpack
         uses: actions/upload-artifact@v2
         with:
           name: JG-RTX Add-on
-          path: JG-RTX.mcaddon
+          path: dist/JG-RTX.mcaddon
