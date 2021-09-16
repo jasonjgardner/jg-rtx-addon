@@ -149,12 +149,10 @@ async function writeTerrainTexture(textureData = {}) {
   ]);
 
   const buildTasks = [
-    outputJSON(join(DIR_DIST, "/RP/blocks.json"), blocks),
     outputFile(
       join(DIR_DIST, "/RP/texts/en_US.lang"),
       [...tileNames].join("\n")
     ),
-    writeTerrainTexture(textureData),
     generateManifest(),
     copyFile(
       join(DIR_SRC, "/static/RP/pack_icon.png"),
@@ -177,4 +175,8 @@ async function writeTerrainTexture(textureData = {}) {
   }
 
   await Promise.all(buildTasks);
+  await Promise.all([
+    outputJSON(join(DIR_DIST, "/RP/blocks.json"), blocks),
+    writeTerrainTexture(textureData),
+  ])
 })();
