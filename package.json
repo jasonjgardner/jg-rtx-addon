@@ -6,6 +6,7 @@
   "main": ".github/actions/build/index.js",
   "scripts": {
     "build": "node .github/actions/build",
+    "build:faces": "node .github/actions/build/faces.js",
     "prettier": "prettier --write ."
   },
   "keywords": [
@@ -23,6 +24,7 @@
   "dependencies": {
     "color-thief-node": "^1.0.4",
     "deep-extend": "^0.6.0",
+    "fast-glob": "^3.2.7",
     "fs-extra": "^10.0.0"
   }
 }
