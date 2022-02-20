@@ -36,10 +36,8 @@ jobs:
         uses: ./.github/actions/build/
       - name: Build mcpack archive
         run: |
-          sudo apt-get update
-          sudo apt-get -y install zip
           cd ${GITHUB_WORKSPACE}/dist
-          zip -r -0 JG-RTX.mcaddon ./RP ./BP
+          zip -r -0 JG-RTX.mcaddon ./jgrtx\ RP ./jgrtx\ BP
 
       - name: Upload mcpack
         uses: actions/upload-artifact@v2
