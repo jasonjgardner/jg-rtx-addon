@@ -48,6 +48,8 @@ const guessSound = (texture) => {
     return "stone";
   }
 
+  console.warn(`Using default sound for block ${blockName}`);
+
   return "wood";
 };
 

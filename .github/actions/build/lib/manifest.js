@@ -1,7 +1,8 @@
 const { join } = require("path");
 const { readJson, writeJson } = require("fs-extra");
 const deepExtend = require("deep-extend");
-const { DIR_DIST, DIR_SRC } = require("./util.js");
+const { DIR_RP, DIR_SRC, DIR_BP } = require("./util.js");
+const { v4: uuidv4 } = require("uuid");
 
 const loadManifest = async (rp = true) => {
   const srcFile = join(
@@ -32,6 +33,16 @@ const arrayFromVersion = (ver) => {
     .map((n) => parseInt(n, 10));
 };
 
+const bumpVersion = (version = [], patch = true) => {
+  version.length = 3;
+
+  return [
+    +version[0],
+    +version[1] + (patch ? 1 : 0),
+    +version[2] + (patch ? 0 : 1),
+  ];
+};
+
 /**
  * Generate manifests for BP and RP
  * @param {string} packVersion Pack version number
@@ -40,10 +51,16 @@ const arrayFromVersion = (ver) => {
  */
 const generateManifest = async (
   packVersion = "1.0.0",
-  targetVersion = "1.17.10"
+  targetVersion = "1.18.20",
+  newId = true
 ) => {
   const rpSrc = await loadManifest();
-  const version = rpSrc.header.version || arrayFromVersion(packVersion);
+
+  let version = rpSrc.header.version || arrayFromVersion(packVersion);
+
+  if (rpSrc.header?.version !== undefined) {
+    version = bumpVersion(arrayFromVersion(rpSrc.header.version));
+  }
 
   const rpManifest = {
     format_version: 2,
@@ -63,9 +80,16 @@ const generateManifest = async (
 
   const bpSrc = await loadManifest(false);
 
+  if (newId) {
+    // Realms requires a new UUID for every add-on installation
+    rpManifest.header.uuid = uuidv4();
+
+    bpSrc.header.uuid = uuidv4();
+  }
+
   const bpManifest = {
     format_version: 2,
-    header: bpSrc.header || rpManifest.header,
+    header: bpSrc.header,
     modules: [
       {
         version,
@@ -82,14 +106,8 @@ const generateManifest = async (
   };
 
   return Promise.all([
-    writeJson(
-      join(DIR_DIST, "/RP/manifest.json"),
-      deepExtend(rpManifest, rpSrc)
-    ),
-    writeJson(
-      join(DIR_DIST, "/BP/manifest.json"),
-      deepExtend(bpManifest, bpSrc)
-    ),
+    writeJson(join(DIR_RP, "/manifest.json"), deepExtend(rpManifest, rpSrc)),
+    writeJson(join(DIR_BP, "/manifest.json"), deepExtend(bpManifest, bpSrc)),
   ]);
 };
 

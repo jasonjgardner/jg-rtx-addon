@@ -1,9 +1,6 @@
-const { join } = require("path");
-const {
-  readJson,
-  outputJSON
-} = require("fs-extra");
-const { DIR_DIST, DIR_SRC, PACK_NS } = require("./util.js");
+const { join } = require("node:path");
+const { readJson, outputJSON } = require("fs-extra");
+const { DIR_SRC, PACK_NS, DIR_RP } = require("./util.js");
 
 async function writeTerrainTexture(textureData = {}) {
   let terrainData = {};
@@ -26,7 +23,7 @@ async function writeTerrainTexture(textureData = {}) {
   };
 
   return outputJSON(
-    join(DIR_DIST, "/RP/textures/terrain_texture.json"),
+    join(DIR_RP, "/textures/terrain_texture.json"),
     terrainData
   );
 }

@@ -11,6 +11,91 @@ const { DIR_SRC, PACK_NS } = require("./util.js");
 //   return palette
 // }
 
+const guessCategory = (texture) => {
+  const blockName = texture.toLowerCase();
+  let category = "construction";
+  let creativeCategory = "concrete";
+
+  if (blockName.includes("brick") || blockName.includes("stonebrick")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.stoneBrick",
+    };
+  }
+
+  if (
+    blockName.includes("stone") ||
+    blockName.includes("gravel") ||
+    blockName.includes("marble")
+  ) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.stone",
+    };
+  }
+
+  if (blockName.includes("tile")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.glazedTerracotta",
+    };
+  }
+
+  if (blockName.includes("planks")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.planks",
+    };
+  }
+
+  if (blockName.includes("copper") || blockName.includes("metal")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.copper",
+    };
+  }
+
+  if (blockName.includes("netherrack")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.netherWartBlock",
+    };
+  }
+
+  if (blockName.includes("glass")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.glass",
+    };
+  }
+
+  if (blockName.includes("leaves") || blockName.includes("leaf")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.leaves",
+    };
+  }
+
+  if (blockName.includes("wood") || blockName.includes("wooden")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.wood",
+    };
+  }
+
+  if (blockName.includes("wool") || blockName.includes("fabric")) {
+    return {
+      category: "construction",
+      creative_category: "itemGroup.name.wool",
+    };
+  }
+
+  return {
+    category: "construction",
+    creative_category: "itemGroup.name.concrete",
+  };
+};
+
 const getDefaultBlock = async (color, base) => {
   const components = {
     "minecraft:flammable": {
@@ -19,6 +104,7 @@ const getDefaultBlock = async (color, base) => {
     },
     "minecraft:destroy_time": 1,
     "minecraft:friction": 0.6,
+    "minecraft:creative_category": guessCategory(base),
   };
 
   // try {
@@ -33,6 +119,7 @@ const getDefaultBlock = async (color, base) => {
       description: {
         identifier: `${PACK_NS}:${color}`,
         is_experimental: false,
+        register_to_creative_menu: true,
       },
       components,
     },

@@ -2,12 +2,11 @@ const { join, basename, extname } = require("path");
 const {
   outputJSON,
   outputFile,
-  readdir,
   copyFile,
   ensureDir,
-  pathExists,
+  emptyDir,
 } = require("fs-extra");
-const { DIR_DIST, DIR_SRC, PACK_NS } = require("./lib/util.js");
+const { DIR_DIST, DIR_SRC, PACK_NS, DIR_BP, DIR_RP } = require("./lib/util.js");
 const { getBlockList, getBlockData } = require("./lib/blocks.js");
 const { getTextureSet, hasTextureSet } = require("./lib/textureSet.js");
 const { writeTerrainTexture } = require("./lib/terrainTexture.js");
@@ -27,7 +26,7 @@ const fg = require("fast-glob");
   const textureData = {};
   const tileNames = new Set();
   const tasks = [];
-  const textureDest = join(DIR_DIST, "/RP/textures/blocks/");
+  const textureDest = join(DIR_RP, "/textures/blocks/");
 
   const buildProcess = async (file, idx, files) => {
     const texturePath = file.replace(/\.[^/.]+$/, "");
@@ -75,7 +74,7 @@ const fg = require("fast-glob");
     /// Reformat block and namespace for texture name
     const textureId = nsBlockName.replace(":", "_");
 
-    textureData[color] = {
+    textureData[textureId] = {
       textures: `textures/blocks/${color}`,
     };
 
@@ -108,37 +107,39 @@ const fg = require("fast-glob");
       };
     } else {
       blocks[nsBlockName].textures = color;
-    }
 
-    try {
-      tasks.push(
-        outputJSON(
-          join(DIR_DIST, `/BP/blocks/${blockName}.json`),
-          await getBlockData(blockName, base)
-        )
-      );
-    } catch (err) {
-      console.error("Could not write block behavior data: %s", err);
+      try {
+        tasks.push(
+          outputJSON(
+            join(DIR_BP, `/blocks/${blockName}.json`),
+            await getBlockData(blockName, base)
+          )
+        );
+      } catch (err) {
+        console.error("Could not write block behavior data: %s", err);
+      }
     }
 
     return tasks;
   };
 
+  await emptyDir(DIR_DIST);
+
   await Promise.all([
-    ensureDir(join(DIR_DIST, "/BP/blocks")),
-    ensureDir(join(DIR_DIST, "/RP/texts")),
-    ensureDir(join(DIR_DIST, "/RP/textures/blocks")),
+    ensureDir(join(DIR_BP, "/blocks")),
+    ensureDir(join(DIR_RP, "/texts")),
+    ensureDir(join(DIR_RP, "/textures/blocks")),
   ]);
 
   const buildTasks = [
     generateManifest(),
     copyFile(
       join(DIR_SRC, "/static/RP/pack_icon.png"),
-      join(DIR_DIST, "/RP/pack_icon.png")
+      join(DIR_RP, "/pack_icon.png")
     ),
     copyFile(
       join(DIR_SRC, "/static/BP/pack_icon.png"),
-      join(DIR_DIST, "/BP/pack_icon.png")
+      join(DIR_BP, "/pack_icon.png")
     ),
   ];
 
@@ -150,11 +151,8 @@ const fg = require("fast-glob");
 
   await Promise.all(buildTasks);
   await Promise.all([
-    outputJSON(join(DIR_DIST, "/RP/blocks.json"), blocks),
+    outputJSON(join(DIR_RP, "/blocks.json"), blocks),
     writeTerrainTexture(textureData),
-    outputFile(
-      join(DIR_DIST, "/RP/texts/en_US.lang"),
-      [...tileNames].join("\n")
-    ),
+    outputFile(join(DIR_RP, "/texts/en_US.lang"), [...tileNames].join("\n")),
   ]);
 })();
