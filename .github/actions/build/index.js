@@ -1,4 +1,4 @@
-const { join, basename, extname } = require("path");
+const { join, basename } = require("path");
 const {
   outputJSON,
   outputFile,

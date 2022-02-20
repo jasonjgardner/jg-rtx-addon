@@ -1,4 +1,4 @@
-const { join } = require("node:path");
+const { join } = require("path");
 const { readJson, outputJSON } = require("fs-extra");
 const { DIR_SRC, PACK_NS, DIR_RP } = require("./util.js");
 

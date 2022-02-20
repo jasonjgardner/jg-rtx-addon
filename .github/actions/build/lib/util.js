@@ -1,4 +1,4 @@
-const { join } = require("node:path");
+const { join } = require("path");
 
 const DIR_ROOT = process.cwd();
 const DIR_DIST = join(DIR_ROOT, "/dist");
