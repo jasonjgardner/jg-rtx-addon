@@ -58,7 +58,7 @@ const generateManifest = async (
 
   let version = rpSrc.header.version || arrayFromVersion(packVersion);
 
-  if (rpSrc.header?.version !== undefined) {
+  if (rpSrc.header && rpSrc.header.version !== undefined) {
     version = bumpVersion(arrayFromVersion(rpSrc.header.version));
   }
 
