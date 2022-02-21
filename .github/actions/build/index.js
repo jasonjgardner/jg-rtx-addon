@@ -36,17 +36,20 @@ const fg = require("fast-glob");
       return;
     }
 
-    const textureFace = file.split(/[/\/]/, 3);
+    const textureFace = `${file}`.split(/[\/\\]/, 3);
     const isTextureFace = textureFace.length > 1;
 
     const textureSet = getTextureSet(texturePath);
-    const color = `${textureSet["minecraft:texture_set"].color}`;
+    const baseTexture = `${textureSet["minecraft:texture_set"].color}`;
 
     tasks.push(
-      outputJSON(join(textureDest, `${color}.texture_set.json`), textureSet),
+      outputJSON(
+        join(textureDest, `${baseTexture}.texture_set.json`),
+        textureSet
+      ),
       copyFile(
         join(DIR_SRC, "/materials/", file),
-        join(textureDest, `${color}.png`)
+        join(textureDest, `${baseTexture}.png`)
       )
     );
 
@@ -54,7 +57,7 @@ const fg = require("fast-glob");
       tasks.push(
         copyFile(
           join(DIR_SRC, `/materials/${texturePath}_mer.png`),
-          join(textureDest, `${color}_mer.png`)
+          join(textureDest, `${baseTexture}_mer.png`)
         )
       );
     }
@@ -63,22 +66,27 @@ const fg = require("fast-glob");
       tasks.push(
         copyFile(
           join(DIR_SRC, `/materials/${texturePath}_normal.png`),
-          join(textureDest, `${color}_normal.png`)
+          join(textureDest, `${baseTexture}_normal.png`)
         )
       );
     }
 
-    const base = basename(file, ".png").trim();
-    const blockName = base.toLowerCase().replace(/\s+/g, "_");
+    /**
+     * @var {string} blockTitle Full, readable title of block
+     */
+    const blockTitle = basename(file, ".png").trim();
+
+    /**
+     * @var {string} blockName Minecraft block ID
+     */
+    const blockName = blockTitle.toLowerCase().replace(/\s+/g, "_");
+
+    /**
+     * @var {string} nsBlockName Minecraft block name with namespace
+     */
     const nsBlockName = `${PACK_NS}:${blockName}`;
-    /// Reformat block and namespace for texture name
-    const textureId = nsBlockName.replace(":", "_");
 
-    textureData[textureId] = {
-      textures: `textures/blocks/${color}`,
-    };
-
-    const tileName = `tile.${nsBlockName}.name=${base}`;
+    const tileName = `tile.${nsBlockName}.name=${blockTitle}`;
 
     if (!tileNames.has(tileName)) {
       tileNames.add(tileName);
@@ -89,7 +97,7 @@ const fg = require("fast-glob");
     }
 
     if (!blocks[nsBlockName].sound) {
-      blocks[nsBlockName].sound = guessSound(base);
+      blocks[nsBlockName].sound = guessSound(blockTitle);
     }
 
     if (isTextureFace) {
@@ -97,29 +105,40 @@ const fg = require("fast-glob");
         blocks[nsBlockName].textures = {};
       }
 
+      const resourceId = `${PACK_NS}_${blockName}_${textureFace[0].replace(
+        "+",
+        "_"
+      )}`;
+
+      textureData[resourceId] = {
+        textures: `textures/blocks/${baseTexture}`,
+      };
+
       blocks[nsBlockName].textures = {
         ...blocks[nsBlockName].textures,
         ...Object.fromEntries(
           textureFace[0].split("+").map((pos) => {
-            return [pos, color];
+            return [pos, resourceId];
           })
         ),
       };
     } else {
-      blocks[nsBlockName].textures = color;
+      textureData[`${PACK_NS}_${blockName}`] = {
+        textures: `textures/blocks/${baseTexture}`,
+      };
 
-      try {
-        tasks.push(
-          outputJSON(
-            join(DIR_BP, `/blocks/${blockName}.json`),
-            await getBlockData(blockName, base)
-          )
-        );
-      } catch (err) {
-        console.error("Could not write block behavior data: %s", err);
-      }
+      blocks[nsBlockName].textures = `${PACK_NS}_${blockName}`;
     }
-
+    try {
+      tasks.push(
+        outputJSON(
+          join(DIR_BP, `/blocks/${blockName}.json`),
+          await getBlockData(blockName, blockTitle)
+        )
+      );
+    } catch (err) {
+      console.error("Could not write block behavior data: %s", err);
+    }
     return tasks;
   };
 

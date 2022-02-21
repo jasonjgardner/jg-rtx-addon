@@ -89,7 +89,10 @@ const generateManifest = async (
 
   const bpManifest = {
     format_version: 2,
-    header: bpSrc.header,
+    header: {
+      version,
+      ...bpSrc.header,
+    },
     modules: [
       {
         version,

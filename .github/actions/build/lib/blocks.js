@@ -13,13 +13,11 @@ const { DIR_SRC, PACK_NS } = require("./util.js");
 
 const guessCategory = (texture) => {
   const blockName = texture.toLowerCase();
-  let category = "construction";
-  let creativeCategory = "concrete";
 
   if (blockName.includes("brick") || blockName.includes("stonebrick")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.stoneBrick",
+      group: "itemGroup.name.stoneBrick",
     };
   }
 
@@ -30,69 +28,69 @@ const guessCategory = (texture) => {
   ) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.stone",
+      group: "itemGroup.name.stone",
     };
   }
 
   if (blockName.includes("tile")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.glazedTerracotta",
+      group: "itemGroup.name.glazedTerracotta",
     };
   }
 
   if (blockName.includes("planks")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.planks",
+      group: "itemGroup.name.planks",
     };
   }
 
   if (blockName.includes("copper") || blockName.includes("metal")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.copper",
+      group: "itemGroup.name.copper",
     };
   }
 
   if (blockName.includes("netherrack")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.netherWartBlock",
+      group: "itemGroup.name.netherWartBlock",
     };
   }
 
   if (blockName.includes("glass")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.glass",
+      group: "itemGroup.name.glass",
     };
   }
 
   if (blockName.includes("leaves") || blockName.includes("leaf")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.leaves",
+      group: "itemGroup.name.leaves",
     };
   }
 
   if (blockName.includes("wood") || blockName.includes("wooden")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.wood",
+      group: "itemGroup.name.wood",
     };
   }
 
   if (blockName.includes("wool") || blockName.includes("fabric")) {
     return {
       category: "construction",
-      creative_category: "itemGroup.name.wool",
+      group: "itemGroup.name.wool",
     };
   }
 
   return {
     category: "construction",
-    creative_category: "itemGroup.name.concrete",
+    group: "itemGroup.name.concrete",
   };
 };
 
