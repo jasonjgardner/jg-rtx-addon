@@ -46,7 +46,12 @@ const guessCategory = (texture) => {
     };
   }
 
-  if (blockName.includes("copper") || blockName.includes("metal")) {
+  if (
+    blockName.includes("copper") ||
+    blockName.includes("metal") ||
+    blockName.includes("silver") ||
+    blockName.includes("gold")
+  ) {
     return {
       category: "construction",
       group: "itemGroup.name.copper",
@@ -60,7 +65,11 @@ const guessCategory = (texture) => {
     };
   }
 
-  if (blockName.includes("glass")) {
+  if (
+    blockName.includes("glass") ||
+    blockName.includes("lamp") ||
+    blockName.includes("window")
+  ) {
     return {
       category: "construction",
       group: "itemGroup.name.glass",
@@ -101,7 +110,7 @@ const getDefaultBlock = async (color, base) => {
       flame_odds: 0,
     },
     "minecraft:destroy_time": 1,
-    "minecraft:friction": 0.6,
+    "minecraft:friction": 0.5,
     "minecraft:creative_category": guessCategory(base),
   };
 

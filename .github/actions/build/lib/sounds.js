@@ -33,7 +33,9 @@ const guessSound = (texture) => {
     blockName.includes("gold") ||
     blockName.includes("silver") ||
     blockName.includes("iron") ||
-    blockName.includes("brass")
+    blockName.includes("brass") ||
+    blockName.includes("platinum") ||
+    blockName.includes("bronze")
   ) {
     return "metal";
   }
@@ -43,7 +45,8 @@ const guessSound = (texture) => {
     blockName.includes("concrete") ||
     blockName.includes("cement") ||
     blockName.includes("rock") ||
-    blockName.includes("plaster")
+    blockName.includes("plaster") ||
+    blockName.includes("marble")
   ) {
     return "stone";
   }

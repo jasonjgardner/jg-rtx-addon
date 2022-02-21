@@ -50,9 +50,9 @@ const bumpVersion = (version = [], patch = true) => {
  * @returns
  */
 const generateManifest = async (
+  newId = false,
   packVersion = "1.0.0",
-  targetVersion = "1.18.20",
-  newId = true
+  targetVersion = "1.18.20"
 ) => {
   const rpSrc = await loadManifest();
 
@@ -67,6 +67,7 @@ const generateManifest = async (
     header: {
       version,
       min_engine_version: arrayFromVersion(targetVersion),
+      uuid: rpSrc.header.uuid,
     },
     modules: [
       {
@@ -75,6 +76,7 @@ const generateManifest = async (
         type: "resources",
       },
     ],
+    dependencies: [],
     capabilities: ["raytraced"],
   };
 
@@ -92,6 +94,7 @@ const generateManifest = async (
     header: {
       version,
       ...bpSrc.header,
+      uuid: bpSrc.header.uuid || uuidv4(),
     },
     modules: [
       {
@@ -102,11 +105,26 @@ const generateManifest = async (
     ],
     dependencies: [
       {
-        uuid: rpSrc.header.uuid,
-        version,
+        uuid: rpManifest.header.uuid,
+        version: rpManifest.header.version,
       },
+      // {
+      //   uuid: rpManifest.modules[0].uuid,
+      //   version: rpManifest.modules[0].version,
+      // },
     ],
   };
+
+  rpManifest.dependencies.push(
+    {
+      uuid: bpManifest.header.uuid,
+      version: bpManifest.header.version,
+    }
+    // {
+    //   uuid: bpManifest.modules[0].uuid,
+    //   version: bpManifest.modules[0].version,
+    // }
+  );
 
   return Promise.all([
     writeJson(join(DIR_RP, "/manifest.json"), deepExtend(rpManifest, rpSrc)),

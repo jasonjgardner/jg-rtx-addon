@@ -151,7 +151,7 @@ const fg = require("fast-glob");
   ]);
 
   const buildTasks = [
-    generateManifest(),
+    generateManifest(process.env.GITHUB_ACTIONS !== undefined),
     copyFile(
       join(DIR_SRC, "/static/RP/pack_icon.png"),
       join(DIR_RP, "/pack_icon.png")

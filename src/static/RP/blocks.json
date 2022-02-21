@@ -1,1 +1,38 @@
-{}
+{
+    "jgrtx:clean_asphalt_tarmac": {
+        "sound": "stone"
+    },
+    "jgrtx:creative_tile_01": {
+        "sound": "glass"
+    },
+    "jgrtx:creative_tile_02": {
+        "sound": "glass"
+    },
+    "jgrtx:creative_tile_03": {
+        "sound": "glass"
+    },
+    "jgrtx:creative_tile_04": {
+        "sound": "glass"
+    },
+    "jgrtx:creative_tile_05": {
+        "sound": "glass"
+    },
+    "jgrtx:green_lamp": {
+        "sound": "glass"
+    },
+    "jgrtx:medieval_castle_wall_1": {
+        "sound": "brick"
+    },
+    "jgrtx:polished_netherrack": {
+        "sound": "stone"
+    },
+    "jgrtx:greco_scritto_pillar": {
+        "sound": "stone"
+    },
+    "jgrtx:stonebrick_foundation": {
+        "sound": "gravel",
+        "textures": {
+            "down": "dirt"
+        }
+    }
+}
