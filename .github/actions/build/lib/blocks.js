@@ -103,7 +103,7 @@ const guessCategory = (texture) => {
   };
 };
 
-const getDefaultBlock = async (color, base) => {
+const getDefaultBlock = async (color, base, hasBlockModel) => {
   const components = {
     "minecraft:flammable": {
       burn_odds: 0,
@@ -120,6 +120,18 @@ const getDefaultBlock = async (color, base) => {
   //   console.warn("Can not load block dominant color: %s", err);
   // }
 
+  if (hasBlockModel === true) {
+    components["minecraft:geometry"] = `geometry.${color}`;
+    components["minecraft:material_instances"] = {
+      "*": {
+        texture: `${PACK_NS}_${color}`,
+        render_method: "opaque",
+      },
+    };
+  } else {
+    components["minecraft:unit_cube"] = {};
+  }
+
   return {
     format_version: "1.16.100",
     "minecraft:block": {
@@ -133,11 +145,11 @@ const getDefaultBlock = async (color, base) => {
   };
 };
 
-const getBlockData = async (color, base) => {
+const getBlockData = async (color, base, hasBlockModel) => {
   const blockFile = join(DIR_SRC, `/static/BP/blocks/${color}.json`);
 
   return {
-    ...(await getDefaultBlock(color, base)),
+    ...(await getDefaultBlock(color, base, hasBlockModel)),
     ...((await pathExists(blockFile)) ? await readJson(blockFile) : {}),
   };
 };

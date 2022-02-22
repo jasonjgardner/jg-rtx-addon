@@ -1,0 +1,30 @@
+{
+    "format_version": "1.16.100",
+    "minecraft:block": {
+        "description": {
+            "identifier": "jgrtx:tombstone",
+            "is_experimental": false,
+            "register_to_creative_menu": true
+        },
+        "components": {
+            "minecraft:flammable": {
+                "burn_odds": 0,
+                "flame_odds": 0
+            },
+            "minecraft:destroy_time": 1,
+            "minecraft:friction": 0.5,
+            "minecraft:creative_category": {
+                "category": "construction",
+                "group": "itemGroup.name.stone"
+            },
+            "minecraft:geometry": "geometry.tombstone",
+            "minecraft:material_instances": {
+                "*": {
+                    "texture": "jgrtx_tombstone",
+                    "render_method": "opaque"
+                }
+            },
+            "minecraft:rotation": [0, 90, 0]
+        }
+    }
+}

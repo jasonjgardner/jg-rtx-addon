@@ -10,6 +10,7 @@ const { DIR_DIST, DIR_SRC, PACK_NS, DIR_BP, DIR_RP } = require("./lib/util.js");
 const { getBlockList, getBlockData } = require("./lib/blocks.js");
 const { getTextureSet, hasTextureSet } = require("./lib/textureSet.js");
 const { writeTerrainTexture } = require("./lib/terrainTexture.js");
+const { hasGeometry } = require("./lib/models.js");
 const guessSound = require("./lib/sounds.js");
 const generateManifest = require("./lib/manifest.js");
 const fg = require("fast-glob");
@@ -32,7 +33,7 @@ const fg = require("fast-glob");
     const texturePath = file.replace(/\.[^/.]+$/, "");
 
     if (hasTextureSet(texturePath, files)) {
-      console.info("Skipping %s", file);
+      console.info("Skipping texture set JSON creation for file %s", file);
       return;
     }
 
@@ -129,11 +130,24 @@ const fg = require("fast-glob");
 
       blocks[nsBlockName].textures = `${PACK_NS}_${blockName}`;
     }
+
+    const hasBlockModel = files.includes(`${texturePath}.geo.json`);
+
+    if (hasBlockModel) {
+      // Copy block model
+      tasks.push(
+        copyFile(
+          join(DIR_SRC, `/materials/${texturePath}.geo.json`),
+          join(DIR_RP, `/models/blocks/${blockName}.geo.json`)
+        )
+      );
+    }
+
     try {
       tasks.push(
         outputJSON(
           join(DIR_BP, `/blocks/${blockName}.json`),
-          await getBlockData(blockName, blockTitle)
+          await getBlockData(blockName, blockTitle, hasBlockModel)
         )
       );
     } catch (err) {
@@ -146,7 +160,9 @@ const fg = require("fast-glob");
 
   await Promise.all([
     ensureDir(join(DIR_BP, "/blocks")),
+    ensureDir(join(DIR_BP, "/functions")),
     ensureDir(join(DIR_RP, "/texts")),
+    ensureDir(join(DIR_RP, "/models/blocks")),
     ensureDir(join(DIR_RP, "/textures/blocks")),
   ]);
 
@@ -162,7 +178,7 @@ const fg = require("fast-glob");
     ),
   ];
 
-  const entries = await fg([`./*.{png,tga}`, `./**/*.{png,tga}`], {
+  const entries = await fg([`./*.{png,tga,json}`, `./**/*.{png,tga,json}`], {
     cwd: join(DIR_SRC, "/materials"),
   });
 
