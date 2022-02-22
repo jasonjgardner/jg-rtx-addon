@@ -37,7 +37,7 @@ jobs:
       - name: Build mcpack archive
         run: |
           cd ${GITHUB_WORKSPACE}/dist
-          zip -r -0 JG-RTX.mcaddon ./jgrtx\ RP ./jgrtx\ BP
+          zip -r -0 JG-RTX.mcaddon ./*\ RP ./*\ BP
 
       - name: Upload mcpack
         uses: actions/upload-artifact@v2
