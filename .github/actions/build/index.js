@@ -10,7 +10,6 @@ const { DIR_DIST, DIR_SRC, PACK_NS, DIR_BP, DIR_RP } = require("./lib/util.js");
 const { getBlockList, getBlockData } = require("./lib/blocks.js");
 const { getTextureSet, hasTextureSet } = require("./lib/textureSet.js");
 const { writeTerrainTexture } = require("./lib/terrainTexture.js");
-const { hasGeometry } = require("./lib/models.js");
 const guessSound = require("./lib/sounds.js");
 const generateManifest = require("./lib/manifest.js");
 const fg = require("fast-glob");
